@@ -83,7 +83,7 @@ async function submitApp(){if(busy)return;let name=nm.value.trim(),digits=ph.val
  if(!name)return alert('이름을 입력해주세요.');if(digits.length<10||digits.length>11)return alert('휴대전화 전체 번호를 확인해주세요.');if(!privacyAgree.checked)return alert('개인정보 수집·이용 동의가 필요합니다.');
  let items=OPEN.filter(g=>selected.has(g.key));let dup=items.filter(g=>doneSet().includes(digits+'#'+g.key));if(dup.length)return alert('이미 신청한 매장이 있습니다: '+dup.map(g=>g.store).join(', ')+'\n해당 매장의 선택을 해제해주세요.');
  busy=true;let btn=document.querySelector('#applyModal .primary');btn.disabled=true;btn.textContent='신청 중…';
- try{await sendForm({name,phone:fmtPhone(digits),keys:items.map(g=>g.key).join('\n'),stores:items.map(g=>g.brand+' / '+g.store).join('\n'),agree:'동의 '+new Date().toLocaleString('ko-KR')});
+ try{const ag='동의 '+new Date().toLocaleString('ko-KR');for(const g of items){await sendForm({name,phone:fmtPhone(digits),keys:g.key,stores:g.brand+' / '+g.store,agree:ag})}
   markDone(digits,items.map(g=>g.key));applyModal.classList.remove('open');nm.value='';ph.value='';selected.clear();renderSelected();showSuccess(name,items)}
  catch(e){alert('신청 중 문제가 생겼습니다. 인터넷 연결을 확인하고 다시 시도해주세요.')}
  finally{busy=false;btn.disabled=false;btn.textContent='신청하기'}}
